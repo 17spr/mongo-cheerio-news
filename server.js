@@ -2,6 +2,7 @@
 var express = require("express");
 var bodyParser = require("body-parser");
 var mongoose = require("mongoose");
+
 var axios = require("axios");
 var cheerio = require("cheerio");
 
@@ -21,14 +22,14 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 // Connecting to Heroku database if deployed; otherwise connecting to local `mongoHeadlines` database
-var MONGODB_URI = process.env.MONGODB_URI  || "mongodb://localhost/mongoHeadlines";
+// var MONGODB_URI = process.env.MONGODB_URI  || "mongodb://localhost/mongoHeadlines";
 
 
 
 // built in JavaScript ES6 Promises
-mongoose.Promise = Promise;
+// mongoose.Promise = Promise;
 // Connecting to the Mongo DB
-mongoose.connect(MONGODB_URI);
+mongoose.connect("mongodb://localhost/mongoHeadlines");
 
 
 
@@ -41,7 +42,7 @@ mongoose.connect(MONGODB_URI);
 
 // });
 
-// scraping articles from chosen source 
+// scraping articles from The Marshall Project's news page 
 app.get("/scrape", function(req, res) {
 
  axios.get("https://www.themarshallproject.org/tag/news?hp").then(function(response) {
@@ -55,7 +56,7 @@ app.get("/scrape", function(req, res) {
         result.headline = $(this)
         .children("a")
         .text();
-        result.sumarry = $("div.ease-deck")
+        result.sumarry = $("div.tease-deck")
         .children("a")
         .text();
         result.link = $(this)
@@ -63,13 +64,13 @@ app.get("/scrape", function(req, res) {
         .attr("href");
 
      db.Article.create(result)
-    .then(function(dbArticle) {
+        .then(function(dbArticle) {
         // console logging result for added article
         console.log(dbArticle);
-    })
-    .catch(function(err) {
+        })
+        .catch(function(err) {
   // If an error occurred, send it to the client
-        return res.json(err)
+         res.json(err)
         })
     })
     // if successful, show message in browser
