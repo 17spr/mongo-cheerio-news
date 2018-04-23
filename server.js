@@ -24,8 +24,6 @@ app.use(express.static("public"));
 var MONGODB_URI = process.env.MONGODB_URI  || "mongodb://localhost/mongoHeadlines";
 
 
-// Connecting to Heroku database if deployed; otherwise connecting to local `mongoHeadlines` database
-// var MONGODB_URI = process.env.MONGODB_URI  || "mongodb://localhost/mongoHeadlines";
 
 // built in JavaScript ES6 Promises
 mongoose.Promise = Promise;
