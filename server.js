@@ -1,6 +1,7 @@
 // dependencies
 var express = require("express");
 var bodyParser = require("body-parser");
+var logger = require("morgan");
 var mongoose = require("mongoose");
 
 var axios = require("axios");
@@ -16,20 +17,22 @@ var PORT = 3000;
 var app = express();
 
 
+app.use(logger("dev"));
+
 // using Body-Parser 
 app.use(bodyParser.urlencoded({ extended: true }));
 // Use express.static to serve the public folder as a static directory
 app.use(express.static("public"));
 
 // Connecting to Heroku database if deployed; otherwise connecting to local `mongoHeadlines` database
-// var MONGODB_URI = process.env.MONGODB_URI  || "mongodb://localhost/mongoHeadlines";
+var MONGODB_URI = process.env.MONGODB_URI  || "mongodb://localhost/mongoHeadlines";
 
 
 
 // built in JavaScript ES6 Promises
-// mongoose.Promise = Promise;
+mongoose.Promise = Promise;
 // Connecting to the Mongo DB
-mongoose.connect("mongodb://localhost/mongoHeadlines");
+mongoose.connect(MONGODB_URI);
 
 
 
@@ -37,10 +40,6 @@ mongoose.connect("mongodb://localhost/mongoHeadlines");
 // Routes ======================
 
 
-// send home page
-// app.get("/", function(req, res) {
-
-// });
 
 // scraping articles from The Marshall Project's news page 
 app.get("/scrape", function(req, res) {
@@ -69,11 +68,10 @@ app.get("/scrape", function(req, res) {
         console.log(dbArticle);
         })
         .catch(function(err) {
-  // If an error occurred, send it to the client
-         res.json(err)
+            return res.json(err);
         })
     })
-    // if successful, show message in browser
+    // if successful, send message
     res.send("Scraped!");
 
  });
