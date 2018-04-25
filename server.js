@@ -6,7 +6,6 @@ var mongoose = require("mongoose");
 
 var axios = require("axios");
 var cheerio = require("cheerio");
-
 // importing MongoDB Models
 var db = require("./models");
 
@@ -15,7 +14,6 @@ var PORT = 3000;
 
 // initializing Express server
 var app = express();
-
 
 app.use(logger("dev"));
 
@@ -26,38 +24,30 @@ app.use(express.static("public"));
 
 // Connecting to Heroku database if deployed; otherwise connecting to local `mongoHeadlines` database
 var MONGODB_URI = process.env.MONGODB_URI  || "mongodb://localhost/mongoHeadlines";
-
-
-
 // built in JavaScript ES6 Promises
 mongoose.Promise = Promise;
 // Connecting to the Mongo DB
 mongoose.connect(MONGODB_URI);
 
 
-
-
 // Routes ======================
 
-
-
-// scraping articles from The Marshall Project's news page 
+// scraping articles from news page of Node.js Daily 
 app.get("/scrape", function(req, res) {
 
- axios.get("https://www.themarshallproject.org/tag/news?hp").then(function(response) {
+ axios.get("https://news.risingstack.com/").then(function(response) {
 
     var $ = cheerio.load(response.data);
 
-    $("div.tease-headline-std").each(function(i, element) {
-    
+    // selecting all elements with an <h2> tag
+    // then iterating over the elements and creating a `result` object
+    // an `Article` object is then created in the database and logged to the console
+    $("h2").each(function(i, element) {
         var result = {};
         
         result.headline = $(this)
-        .children("a")
         .text();
-        result.sumarry = $("div.tease-deck")
-        .children("a")
-        .text();
+        result.summary = ("Node.js Daily - learn Node.js every day.")
         result.link = $(this)
         .children("a")
         .attr("href");
