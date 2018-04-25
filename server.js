@@ -49,12 +49,11 @@ app.get("/scrape", function(req, res) {
         .text();
         result.summary = ("Node.js Daily - learn Node.js every day.")
         result.link = $(this)
-        .children("a")
         .attr("href");
 
      db.Article.create(result)
         .then(function(dbArticle) {
-        // console logging result for added article
+        // console logging the added article object
         console.log(dbArticle);
         })
         .catch(function(err) {
@@ -66,6 +65,44 @@ app.get("/scrape", function(req, res) {
 
  });
 });
+
+// retrieving all articles from the database
+app.get("/articles", function(req, res) {
+    db.Article.find({})
+    .then(function(dbArticle) {
+        res.json(dbArticle);
+    })
+    .catch(function(err) {
+        res.json(err);
+    });
+});
+
+// retrieving comments on articles
+app.get("/articles/:id", function(req, res) {
+    db.Article.findOne({ _id: req.params.id })
+      .populate("comment")
+      .then(function(dbArticle) {
+        res.json(dbArticle);
+      })
+      .catch(function(err) {
+        res.json(err);
+      });
+  });
+
+// route for creating comment 
+  app.post("/articles/:id", function(req, res) {
+    db.Comment.create(req.body)
+      .then(function(dbComment) {
+
+        return db.Article.findOneAndUpdate({ _id: req.params.id }, { comment: dbComment._id }, { new: true });
+      })
+      .then(function(dbArticle) {
+        res.json(dbArticle);
+      })
+      .catch(function(err) {
+        res.json(err);
+      });
+  });
 
 
 app.listen(PORT, function() {

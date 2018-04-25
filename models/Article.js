@@ -19,9 +19,10 @@ var ArticleSchema = new Schema ({
         required: true
     },
 
-    note: {
+    // referencing the `Comment.js` file containing the Note schema model
+    comment: {
         type: Schema.Types.ObjectId,
-        ref: "Note" 
+        ref: "Comment" 
     }
 
 
