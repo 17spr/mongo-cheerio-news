@@ -77,9 +77,9 @@ app.get("/articles", function(req, res) {
     });
 });
 
-// retrieving comments on articles
+// retrieving articles with their associated comments
 app.get("/articles/:id", function(req, res) {
-    db.Article.findOne({ _id: req.params.id })
+    db.Article.findOne({ _id: req.params.id})
       .populate("comment")
       .then(function(dbArticle) {
         res.json(dbArticle);
